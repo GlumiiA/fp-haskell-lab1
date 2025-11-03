@@ -1,0 +1,34 @@
+name: Haskell CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up GHC and Stack
+      uses: haskell/actions/setup@v1
+      with:
+        ghc-version: '9.10.3'
+        stack-version: '2.11.0'
+
+    - name: Build project
+      run: stack build --no-strip
+
+    - name: Run tests
+      run: stack test
+
+    - name: Run HLint
+      run: |
+        stack exec -- hlint src test
+
+    - name: Run Ormolu formatter check
+      run: |
+        stack exec -- ormolu --mode check --ghc-opt -isrc --stdin-input < src/Main.hs
