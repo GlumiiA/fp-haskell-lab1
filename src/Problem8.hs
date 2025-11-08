@@ -34,18 +34,21 @@ digits =
 toInts :: String -> [Int]
 toInts = map digitToInt
 
--- 1. Рекурсия
+-- | 1. Рекурсивный безопасный вариант
 largestProduct1 :: Int -> String -> Int
 largestProduct1 n xs
   | length xs < n = 0
-  | otherwise = max (product (toInts (take n xs))) (largestProduct1 n (tail xs))
+  | otherwise =
+      let firstProd = product (toInts (take n xs))
+          restProd  = largestProduct1 n (drop 1 xs)
+      in max firstProd restProd
 
--- 2. Через списковое выражение
+-- | 2. Через списковое выражение (list comprehension)
 largestProduct2 :: Int -> String -> Int
 largestProduct2 n xs =
   maximum [product (toInts (take n (drop i xs))) | i <- [0 .. length xs - n]]
 
--- 3. Через fold / tails
+-- | 3. Через fold / tails безопасно
 largestProduct3 :: Int -> String -> Int
 largestProduct3 n xs =
   maximum [product (map digitToInt (take n t)) | t <- tails xs, length t >= n]
