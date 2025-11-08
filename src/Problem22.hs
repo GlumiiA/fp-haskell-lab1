@@ -10,23 +10,15 @@ module Problem22
 
 import Data.List (sort)
 import Data.Char (ord)
-import System.IO (readFile)
 
--- | Чтение и сортировка имён из CSV файла
-loadNames :: FilePath -> IO [String]
+-- Общая функция чтения и сортировки имён
+loadNames :: String -> IO [String]
 loadNames path = do
   content <- readFile path
-  let names = map (filter (/= '\"')) $ splitNames content
-  return (sort names)
+  let names = sort (read ("[" ++ content ++ "]") :: [String])
+  return names
 
--- | Вспомогательная функция для разделения имён через запятую
-splitNames :: String -> [String]
-splitNames [] = []
-splitNames cs = case break (== ',') cs of
-  (name, [])     -> [name]
-  (name, _:rest) -> name : splitNames rest
-
--- | Вычисление "веса" имени (A=1, B=2, ...)
+-- Вычисление "веса" имени
 nameValue :: String -> Int
 nameValue = sum . map (\c -> ord c - ord 'A' + 1)
 
@@ -44,17 +36,21 @@ totalScore2 names = go names 1 0
     go [] _ acc = acc
     go (x:xs) i acc = go xs (i + 1) (acc + nameValue x * i)
 
--- 3. Через fold
+
+-- 3. Модульный вариант с fold
 totalScore3 :: [String] -> Int
 totalScore3 names =
   let nameScores = zipWith (\i n -> (i + 1) * nameValue n) [0..] names
   in foldl (+) 0 nameScores
 
--- 4. Через map и zipWith
+
+-- 4. Использование map
 totalScore4 :: [String] -> Int
 totalScore4 names =
-  let scores = zipWith (*) (map nameValue names) [1..]
+  let nameValues = map nameValue names
+      scores = zipWith (*) nameValues [1..]
   in sum scores
+
 
 -- 5. Ленивые бесконечные списки
 totalScore5 :: [String] -> Int
