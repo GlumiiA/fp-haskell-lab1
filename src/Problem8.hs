@@ -3,6 +3,7 @@ module Problem8
   , largestProduct1
   , largestProduct2
   , largestProduct3
+  , largestProduct4
   ) where
 
 import Data.Char (digitToInt)
@@ -34,7 +35,7 @@ digits =
 toInts :: String -> [Int]
 toInts = map digitToInt
 
--- | 1. Рекурсивный безопасный вариант
+-- | 1. Рекурсивный вариант
 largestProduct1 :: Int -> String -> Int
 largestProduct1 n xs
   | length xs < n = 0
@@ -43,12 +44,23 @@ largestProduct1 n xs
           restProd  = largestProduct1 n (drop 1 xs)
       in max firstProd restProd
 
--- | 2. Через списковое выражение (list comprehension)
+-- | 2. Через списковое выражение
 largestProduct2 :: Int -> String -> Int
 largestProduct2 n xs =
   maximum [product (toInts (take n (drop i xs))) | i <- [0 .. length xs - n]]
 
--- | 3. Через fold / tails безопасно
+-- | 3. Через map / tails
 largestProduct3 :: Int -> String -> Int
 largestProduct3 n xs =
   maximum [product (map digitToInt (take n t)) | t <- tails xs, length t >= n]
+
+
+-- Через foldl
+largestProduct4 :: Int -> String -> Int
+largestProduct4 n xs =
+    let
+        windows = [take n (drop i xs) | i <- [0..length xs - n]]
+        filtered = filter (notElem '0') windows
+        products = map (product . toInts) filtered
+    in
+        foldl max 0 products

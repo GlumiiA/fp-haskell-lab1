@@ -16,7 +16,8 @@ testLargestProduct = TestList
       let r1 = largestProduct1 13 digits
           r2 = largestProduct2 13 digits
           r3 = largestProduct3 13 digits
-      in (r1, r2, r3) ~?= (r1, r1, r1)
+          r4 = largestProduct4 13 digits
+      in (r1, r2, r3, r4) ~?= (r1, r1, r1, r4)
   ]
 
 -- Тесты для задачи 22

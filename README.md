@@ -84,7 +84,10 @@ print(best_digits, "=", max_product)
 largestProduct1 :: Int -> String -> Int
 largestProduct1 n xs
   | length xs < n = 0
-  | otherwise = max (product (toInts (take n xs))) (largestProduct1 n (tail xs))
+  | otherwise =
+      let firstProd = product (toInts (take n xs))
+          restProd  = largestProduct1 n (drop 1 xs)
+      in max firstProd restProd
 ```
 
 ---
@@ -122,6 +125,22 @@ toInts :: String -> [Int]
 toInts = map digitToInt
 ```
 
+---
+
+#### Модульная реализация через fold, filter и map
+
+Генерируем все окна длиной `n`, фильтруем окна с нулём, вычисляем произведения и берём максимум через `foldl`.
+
+```haskell
+largestProduct4 :: Int -> String -> Int
+largestProduct4 n xs =
+    let
+        windows = [take n (drop i xs) | i <- [0..length xs - n]]
+        filtered = filter (notElem '0') windows
+        products = map (product . toInts) filtered
+    in
+        foldl max 0 products
+```
 ---
 
 ## Problem 22
